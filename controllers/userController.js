@@ -1,7 +1,12 @@
 const { Op, Sequelize, QueryTypes } = require("sequelize");
 const db = require('../models');
 var express = require('express')
+var app = express()
+
 var bodyParser = require('body-parser');
+const ejs = require("ejs")
+app.set('view engine', 'ejs')
+
 const comment = require("../models/comment");
 const tag = require("../models/tag");
 // const address = require("../models/address");
@@ -10,6 +15,7 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(express.json())
 User = db.User
+Emp = db.Emp
 con = db.Contact
 Grant = db.Grant
 Image = db.Image
@@ -280,43 +286,43 @@ var oneToOneUser = async (req, res) => {
 
 
     //when we get first contact id then we use contact table name insted of user table. in all place and because of that all attributes and condition was change 
-    // var data = await User.findAll({
-    //     attributes:['firstName','lastName'], 
-    //     include:[{
-    //         model:Contact,
-    //         attributes:['parmanentAddress','currentAddress']
-    //     }]
+    var data = await User.findAll({
+        attributes:['firstName','lastName'], 
+        include:[{
+            model:con,
+            attributes:['parmanentAddress','currentAddress']
+        }]
 
-    // })
+    })
     res.status(200).json({ data: data })
 
 }
 
 var oneToManyUser = async (req, res) => {
 
-    const data = await User.bulkCreate([
-        {
-            firstName: 'chair',
-            lastName: 'hansen',
-            Contacts: {
-                parmanentAddress: 'gokuldham',
-                currentAddress: 'gelexy',
-            }
-        },
-        {
-            firstName: 'gg',
-            lastName: 'hangfgsen',
-            Contacts: {
-                parmanentAddress: 'gggd',
-                currentAddress: 'geldddddddexy',
-            }
-        }
-    ],
+    // const data = await User.bulkCreate([
+    //     {
+    //         firstName: 'chair',
+    //         lastName: 'hansen',
+    //         Contacts: {
+    //             parmanentAddress: 'gokuldham',
+    //             currentAddress: 'gelexy',
+    //         }
+    //     },
+    //     {
+    //         firstName: 'gg',
+    //         lastName: 'hangfgsen',
+    //         Contacts: {
+    //             parmanentAddress: 'gggd',
+    //             currentAddress: 'geldddddddexy',
+    //         }
+    //     }
+    // ],
 
-        {
-            include: [con]
-        })
-    console.log(User)
+    //     {
+    //         include: [con]
+    //     })
+    // console.log(User)
 
 
     var data1 = await User.findAll({
@@ -340,7 +346,7 @@ var manyToManyUser = async (req, res) => {
             firstName: 'vijay',
             lastName: 'rathod',
 
-            Contacts: [{
+            Contacts: [{//database table name
                 parmanentAddress: 'rajkot',
                 currentAddress: 'kalupur',
                 userId: 2,
@@ -353,7 +359,7 @@ var manyToManyUser = async (req, res) => {
             firstName: 'sumit',
             lastName: 'bhardwaj',
 
-            Contacts: [{
+            Contacts: [{//database table name
                 parmanentAddress: 'up',
                 currentAddress: 'mp',
                 userId: 1,
@@ -492,7 +498,68 @@ var polyManyToManyUser = async (req, res) => {
     res.status(200).json({ data: data2 })
 }
 
+var data = async(req,res)=>{
+  res.render("index")
+}
+var get_data = async(req,res)=>{
 
+    const start = req.query.start;
+    console.log("start",start)
+
+    const length = req.query.length;
+    console.log("length",length)
+
+    const firstName = req.query.search;
+    console.log(firstName)
+    const firstNameValue = firstName.value
+    console.log(firstNameValue)
+
+    const order = req.query.order
+    if(order){
+        var column =  order[0].column;
+        var columnName = req.query.columns[column].data;
+        console.log(req.query.columns[column].data)
+        // console.log("columnname",columnName)
+        var direction = order[0].dir
+    }   else{
+        var column =  'id'
+        var direction = 'asc'
+    }
+    
+
+    const paginationData = await Emp.findAll({
+        offset:parseInt(start),
+        limit:parseInt(length),
+        order:[column,direction],
+        where:{
+            [Op.or]: [{
+                firstName:{[Op.like]: `%${firstNameValue}%`}, 
+            }],  
+        }
+    });
+
+
+    
+    // console.log(search[0])
+
+    // if (firstName) where.firstName = { [Op.like]: `%${firstName.trim()}%` }
+
+    // const searchingData = await Emp.findAll({
+    //     where: {
+    //         [Op.like]: `%${firstName}%` 
+    //     }
+    // })
+
+
+    res.json({
+        offset:parseInt(start),
+        limit:parseInt(length),
+        data:paginationData
+    })
+
+
+    // console.log(data)
+}
 module.exports = {
     home,
     addUser,
@@ -512,5 +579,8 @@ module.exports = {
     oneToManyUser,
     manyToManyUser,
     polyOneToManyUser,
-    polyManyToManyUser
+    polyManyToManyUser,
+    data,
+    get_data
+    
 }

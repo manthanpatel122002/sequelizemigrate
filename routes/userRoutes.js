@@ -1,6 +1,8 @@
 var userctrl = require('../controllers/userController')
 
 var express = require('express')
+
+
 var app = express()
 
 
@@ -45,6 +47,12 @@ app.get('/many-to-many',userctrl.manyToManyUser)
 app.get('/polyOneToMany',userctrl.polyOneToManyUser)
 
 app.get('/polyManyToMany',userctrl.polyManyToManyUser)
+
+//data table
+
+app.get("/get_data",userctrl.get_data);
+
+app.get('/data',userctrl.data)
 
 
 
