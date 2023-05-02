@@ -24,5 +24,10 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'Emp',
   });
+
+    //one-to-many
+    Emp.associate = function (models) {
+      Emp.hasMany(models.Emp_Info);//f id name is not match then enter by default forigin key name {foreignKey: {name: 'myFooId'}}
+    }
   return Emp;
 };

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -8,6 +9,7 @@
     <!-- <link rel="stylesheet" type="text/css" href="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/css/jquery.dataTables.css"/> -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" />
 </head>
+
 <body>
     <table id="myTable" class="display">
         <thead>
@@ -19,12 +21,14 @@
                 <th>userName </th>
                 <th>password </th>
                 <th>jobTitle </th>
+                <th>empId </th>
+                <th>currentAddress </th>
+                <th>parmanentAddress</th>
             </tr>
         </thead>
         <tbody>
-            
-        </tbody
-</table>
+
+        </tbody </table>
 </body>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
@@ -32,23 +36,80 @@
 <script>
     $(document).ready(function () {
         $("#myTable").DataTable({
-            'processing':true,
+            "pagingType":"full_numbers",
+            'searching': true,
+            'ordering': true,
+            'paging': true,
+            'language': {
+                "decimal": "",
+                "emptyTable": "No data available in table",
+                "info": "Showing _START_ to _END_ of _TOTAL_ entries",
+                "infoEmpty": "Showing 0 to 0 of 0 entries",
+                "infoFiltered": "(filtered from _MAX_ total entries)",
+                "infoPostFix": "",
+                "thousands": ",",
+                "lengthMenu": "This Is Your Show _MENU_ Entries",
+                "loadingRecords": "Loading...",
+                "processing": "",
+                "search": "Search:",
+                "zeroRecords": "No Records was found ",
+                "paginate": {
+                    "first": "First",
+                    "last": "Last",
+                    "next": "Next",
+                    "previous": "Previous"
+                },
+                "aria": {
+                    "sortAscending": ": activate to sort column ascending",
+                    "sortDescending": ": activate to sort column descending"
+                }
+            },
+            'pageLength': 5,
+            'lengthMenu': [5, 10, 20, 50, 100, 200, 500],
+            'processing': true,
             'serverSide': true,
-            'serverMethod':'get',
+            'serverMethod': 'get',
             'ajax': {
                 'url': 'http://localhost:3000/get_data',
             },
-            'aaSorting':[],
-            'columns':[
-                {data:'id'},
-                {data:'firstName'},
-                {data:'lastName'},
-                {data:'email'},
-                {data:'userName'},
-                {data:'password'},
-                {data:'jobTitle'},
-            ]
+            'aaSorting': [],
+            'columns': [
+                { data: 'id' ,name:'id'},
+                { data: 'firstName' ,name:'firstName'},
+                { data: 'lastName' ,name:'lastName'},
+                { 
+                    name:'email',
+                    data: 'email',
+                    render:function(data,type,row){
+                        return '<a href = "https://www.gmail.com">'+data+'</a>'
+                    }
+                },
+                { data: 'userName' ,name:'userName'},
+                { data: 'password' ,name:'password'},
+                { data: 'jobTitle',name:'jobTitle'},
+                { 
+                    name:'empId',
+                    // data: 'Emp_Infos[|].empId'
+                    data: 'Emp_Infos',
+                    render:"[, ].empId"
+                },
+                { 
+                    name:'currentAddress',
+                    // data: 'Emp_Infos[|].currentAddress'
+                    data: 'Emp_Infos',
+                    render:"[, ].currentAddress"
+
+                },
+                { 
+                    name:'parmanentAddress',
+                    // data: 'Emp_Infos[|].parmanentAddress'
+                    data: 'Emp_Infos',
+                    render:"[, ].parmanentAddress"
+
+                }
+            ],
         });
     });
-    </script>
+</script>
+
 </html>
