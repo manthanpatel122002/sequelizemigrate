@@ -284,43 +284,78 @@ var oneToOneUser = async (req, res) => {
 };
 
 var oneToManyUser = async (req, res) => {
-  // const data = await User.bulkCreate([
-  //     {
-  //         firstName: 'chair',
-  //         lastName: 'hansen',
-  //         Contacts: {
-  //             parmanentAddress: 'gokuldham',
-  //             currentAddress: 'gelexy',
-  //         }
-  //     },
-  //     {
-  //         firstName: 'gg',
-  //         lastName: 'hangfgsen',
-  //         Contacts: {
-  //             parmanentAddress: 'gggd',
-  //             currentAddress: 'geldddddddexy',
-  //         }
-  //     }
-  // ],
+  const data = await User.bulkCreate([
+      {
+          firstName: 'chair',
+          lastName: 'hansen',
+          Contacts: {
+              parmanentAddress: 'gokuldham',
+              currentAddress: 'gelexy',
+          }
+      },
+      {
+          firstName: 'gg',
+          lastName: 'hangfgsen',
+          Contacts: {
+              parmanentAddress: 'gggd',
+              currentAddress: 'geldddddddexy',
+          }
+      }
+  ],
 
-  //     {
-  //         include: [con]
-  //     })
+      {
+          include: [db.Contact]
+      })
   // console.log(User)
 
-  var data1 = await User.findAll({
-    attributes: ["firstName", "lastName"],
-    include: [
-      {
-        model: con, // Eager Loading
-        attributes: ["parmanentAddress", "currentAddress"],
-      },
-    ],
+  // var data1 = await User.findAll({
+  //   attributes: ["firstName", "lastName"],
+  //   include: [
+  //     {
+  //       model: con, // Eager Loading
+  //       attributes: ["parmanentAddress", "currentAddress"],
+  //     },
+  //   ],
+  // })
+
+  // const data = await User.findAll({
+  //   where: { id: [1] },
+  // });
+  // console.log("data",data)
+  // const data1 =await con.destroy({
+  //   where: {
+  //     userId: {
+  //       [Op.in]: data.map((x) => x.id),
+  //     },
+  //   },
+  // });
+  // console.log("data1",data1)
+  // for (const da of data) {
+  //   await con.bulkCreate(
+  //     UserId.map((x) => ({
+  //       userId: da.id,
+  //     }))
+  //   );
+  // }
+  //article = user
+  //tags = contact
+
+  let coning = [
+    con.findOrCreate({ where: { id: 1 } }),
+  ];
+
+  Promise.all(coning).then((usercons) => {
+    User.create({
+      firstName: "vijay",
+      lastName: "rathod",
+    }).then((articleInstance) => {
+      articleInstance.setContacts(usercons.map((usercon) => usercon[0]));
+    });
   });
 
   // var contactdata = await data.getContacts();  Lazy loading
 
-  res.status(200).json({ data: data1 });
+  // res.status(200).json({ data: data2 });
 };
 
 var manyToManyUser = async (req, res) => {
@@ -483,6 +518,29 @@ var polyManyToManyUser = async (req, res) => {
   res.status(200).json({ data: data2 });
 };
 
+var multipleTableDelete = async(req,res)=>{
+  // const data = await User.create(
+  //     {
+  //         firstName: 'chavgfdzgvdzgfdzgdzfdzir',
+  //         lastName: 'hanxczzfvdzfbgdzsen',
+  //         Contacts: {
+  //             parmanentAddress: 'gokulzbvbdzbvgdzffdham',
+  //             currentAddress: 'gelzbvcvzbczbexy',
+  //         }
+  //     },
+  //     {
+  //         include: [db.Contact]
+  //     })
+
+  const data = await User.destroy({
+    where: {
+      id: 1,
+    },
+  });
+  res.status(200).json({ data: data });
+  
+    }
+
 var data = async (req, res) => {
   res.render("index");
 };
@@ -494,20 +552,12 @@ var get_data = async (req, res) => {
   console.log("length", length);
 
   //Searching
-  const firstName = req.query.search;
-  console.log(firstName);
-  const firstNameValue = firstName.value;
-  console.log(firstNameValue);
+  const search = req.query.search;
+  console.log("search", search);
+  const searchValue = search.value;
 
   //Sorting
   const order = req.query.order;
-  // var column = order[0].column;
-  // console.log(column)
-  // var dir = order[0].dir;
-  // console.log(dir)
-
-//   console.log("req.query.columns", req.query.columns[column].data);
-
   if (order) {
     var column = order[0].column;
     console.log("column", column);
@@ -520,6 +570,19 @@ var get_data = async (req, res) => {
     var orderBy = ["id"];
   }
 
+  switch (true) {
+    case column == 7:
+      var orderBy = [Emp_info, "empId", dir];
+      break;
+    case column == 8:
+      var orderBy = [Emp_info, "currentAddress", dir];
+      break;
+    case column == 9:
+      var orderBy = [Emp_info, "parmanentAddress", dir];
+      break;
+  }
+
+  console.log("orderBy", orderBy);
   const recordsTotal = await Emp.count();
   const recordsFiltered = recordsTotal;
 
@@ -532,13 +595,14 @@ var get_data = async (req, res) => {
     ],
     offset: parseInt(start),
     limit: parseInt(length),
+    subQuery: false,
     order: [orderBy],
     where: {
-      [Op.or]: [
-        {
-          firstName: { [Op.like]: `%${firstNameValue}%` },
-        },
-      ],
+      [Op.or]: {
+        firstName: { [Op.like]: `%${searchValue}%` },
+        lastName: { [Op.like]: `%${searchValue}%` },
+        "$Emp_Infos.currentAddress$": { [Op.like]: `%${searchValue}%` },
+      },
     },
   });
   res.json({
@@ -569,6 +633,7 @@ module.exports = {
   manyToManyUser,
   polyOneToManyUser,
   polyManyToManyUser,
+  multipleTableDelete,
   data,
   get_data,
 };

@@ -48,6 +48,9 @@ app.get('/polyOneToMany',userctrl.polyOneToManyUser)
 
 app.get('/polyManyToMany',userctrl.polyManyToManyUser)
 
+app.get("/multipleTableDelete", userctrl.multipleTableDelete);
+
+
 //data table
 
 app.get("/get_data",userctrl.get_data);
