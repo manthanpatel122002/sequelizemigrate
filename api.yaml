@@ -1,0 +1,98 @@
+swagger: "2.0"
+info:
+  title: Node js and sequlize apis
+  description: This is my company documentation was made by me.
+  version: 1.0
+  contact: 
+    email: sbpatel7989@gmail.comn
+  liscence: 
+    name: Apache 2.0
+    url: "http://apache.org"
+  servers: 
+    -url: "http://localhost:3000/"
+    description : this is my local server
+    -url: "http://xyz.com/"
+    description : this is my company server
+
+schemes: [http,https]
+
+
+
+
+
+paths:
+  /:
+    get:
+      summary: Returns a Hello world
+      description: This api is only for checking purpose.
+      responses:
+        200:
+          description: Success
+          schema:
+            type: hello world
+            example: "hello world" 
+        400:
+          description: user error
+        500:
+          description: Internal server error
+
+  /add:
+    get:
+      summary: add one user in database
+      description: This api is used for save user data into database
+      responses:
+        200:
+          description: Success
+          schema:
+            type: object
+            properties: 
+              id:
+                type: integer
+              name:
+                type: string
+        400:
+          description: user error
+        500:
+          description: Internal server error
+
+  /users:
+    get:
+      summary: get one or more data about user 
+      description: This api can gave all user data onto the particuler database
+      responses:
+        200:
+          description: Success
+          schema:
+            type: object
+            properties: 
+              id:
+                type: integer
+              name:
+                type: string
+        400:
+          description: user error
+        500:
+          description: Internal server error
+    post:
+      summary: Test
+      requestBody:
+        description: Optional description in *Markdown*
+
+
+  /user/{id}:
+    get:
+      summary: get one user in database
+      description: This api can take one id and belongs to that user id user data can be shown.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: 
+            type: integer
+      responses:
+        200:
+          description: Success
+        400:
+          description: user error
+        500:
+          description: Internal server error

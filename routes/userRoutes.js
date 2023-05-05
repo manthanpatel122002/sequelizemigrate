@@ -1,4 +1,3 @@
-var userctrl = require('../controllers/userController')
 var home = require("../controllers/home").home;
 var addUser = require("../controllers/addUser").addUser;
 var getUsers = require("../controllers/getUsers").getUsers;
@@ -21,27 +20,7 @@ var polyManyToManyUser =require("../controllers/polyManyToManyUser").polyManyToM
 var data = require("../controllers/data").data;
 var get_data = require("../controllers/get_data").get_data;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 var express = require('express')
-
 
 var app = express()
 

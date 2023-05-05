@@ -3,7 +3,6 @@ User = db.User;
 con = db.Contact;
 Grant = db.Grant;
 
-
 var manyToManyUser = async (req, res) => {
   const data = await User.bulkCreate(
     [
